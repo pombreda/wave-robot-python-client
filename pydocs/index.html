@@ -190,12 +190,12 @@ additional element properties to filter on, like the url of a Gadget.</dd></dl>
 <dl class="attribute">
 <dt id="blip.Blip.child_blip_ids">
 <tt class="descname">child_blip_ids</tt><a class="headerlink" href="#blip.Blip.child_blip_ids" title="Permalink to this definition">¶</a></dt>
-<dd>The set of the ids of this blip&#8217;s children.</dd></dl>
+<dd>The list of the ids of this blip&#8217;s children.</dd></dl>
 
 <dl class="attribute">
 <dt id="blip.Blip.child_blips">
 <tt class="descname">child_blips</tt><a class="headerlink" href="#blip.Blip.child_blips" title="Permalink to this definition">¶</a></dt>
-<dd>The set of blips that are children of this blip.</dd></dl>
+<dd>The list of blips that are children of this blip.</dd></dl>
 
 <dl class="attribute">
 <dt id="blip.Blip.contributors">
@@ -410,6 +410,11 @@ Returns:</p>
 A dict of serialized blips.</blockquote>
 </dd></dl>
 
+<dl class="method">
+<dt id="blip.Blips.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#blip.Blips.values" title="Permalink to this definition">¶</a></dt>
+<dd>Return the blips themselves.</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -491,7 +496,7 @@ A dict of serialized blips.</blockquote>
 
 <dl class="class">
 <dt id="wavelet.Wavelet">
-<em class="property">class </em><tt class="descclassname">wavelet.</tt><tt class="descname">Wavelet</tt><big>(</big><em>json</em>, <em>blips</em>, <em>robot</em>, <em>operation_queue</em><big>)</big><a class="headerlink" href="#wavelet.Wavelet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wavelet.</tt><tt class="descname">Wavelet</tt><big>(</big><em>json</em>, <em>blips</em>, <em>operation_queue</em><big>)</big><a class="headerlink" href="#wavelet.Wavelet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Models a single wavelet.</p>
 <p>A single wavelet is composed of metadata, participants, and its blips.
 To guarantee that all blips are available, specify Context.ALL for events.</p>
@@ -577,11 +582,6 @@ wavelet by setting wavelet.robot_address before calling proxy_for().</p>
 <dd>A transient version of the blip that contains the reply.</dd>
 </dl>
 </dd></dl>
-
-<dl class="attribute">
-<dt id="wavelet.Wavelet.robot">
-<tt class="descname">robot</tt><a class="headerlink" href="#wavelet.Wavelet.robot" title="Permalink to this definition">¶</a></dt>
-<dd>The robot that owns this wavelet.</dd></dl>
 
 <dl class="attribute">
 <dt id="wavelet.Wavelet.robot_address">
@@ -681,7 +681,7 @@ by calling .submit_with() on the returned wavelet.</dd>
 
 <dl class="method">
 <dt id="robot.Robot.fetch_wavelet">
-<tt class="descname">fetch_wavelet</tt><big>(</big><em>wave_id</em>, <em>wavelet_id</em>, <em>proxy_for_id=None</em><big>)</big><a class="headerlink" href="#robot.Robot.fetch_wavelet" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">fetch_wavelet</tt><big>(</big><em>wave_id</em>, <em>wavelet_id=None</em>, <em>proxy_for_id=None</em><big>)</big><a class="headerlink" href="#robot.Robot.fetch_wavelet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the REST interface to fetch a wave and return it.</p>
 <p>The returned wavelet contains a snapshot of the state of the
 wavelet at that point. It can be used to modify the wavelet,
@@ -699,30 +699,16 @@ wavelet.</p>
 <dd>Returns the verification token and ST parameter.</dd></dl>
 
 <dl class="method">
-<dt id="robot.Robot.http_post">
-<tt class="descname">http_post</tt><big>(</big><em>url</em>, <em>data</em>, <em>headers</em><big>)</big><a class="headerlink" href="#robot.Robot.http_post" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute an http post.</p>
-<p>Monkey patch this method to use something other than
-the default urllib.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>url: to post to
-body: post body
-headers: extra headers to pass along</dd>
-<dt>Returns:</dt>
-<dd>response_code, returned_page</dd>
-</dl>
+<dt id="robot.Robot.get_waveservice">
+<tt class="descname">get_waveservice</tt><big>(</big><big>)</big><a class="headerlink" href="#robot.Robot.get_waveservice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the currently installed waveservice if available.</p>
+<p>Throws an exception if no service is installed.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="robot.Robot.image_url">
 <tt class="descname">image_url</tt><a class="headerlink" href="#robot.Robot.image_url" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the URL of the avatar image.</dd></dl>
-
-<dl class="method">
-<dt id="robot.Robot.make_rpc">
-<tt class="descname">make_rpc</tt><big>(</big><em>operations</em><big>)</big><a class="headerlink" href="#robot.Robot.make_rpc" title="Permalink to this definition">¶</a></dt>
-<dd>Make an rpc call, submitting the specified operations.</dd></dl>
 
 <dl class="attribute">
 <dt id="robot.Robot.name">
@@ -815,6 +801,11 @@ profileUrl should be returned.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="robot.Robot.set_http_post">
+<tt class="descname">set_http_post</tt><big>(</big><em>http_post</em><big>)</big><a class="headerlink" href="#robot.Robot.set_http_post" title="Permalink to this definition">¶</a></dt>
+<dd>Set the http_post handler to use when posting.</dd></dl>
+
+<dl class="method">
 <dt id="robot.Robot.set_verification_token_info">
 <tt class="descname">set_verification_token_info</tt><big>(</big><em>token</em>, <em>st=None</em><big>)</big><a class="headerlink" href="#robot.Robot.set_verification_token_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the verification token used in the ownership verification.</p>
@@ -832,7 +823,7 @@ profileUrl should be returned.</p>
 
 <dl class="method">
 <dt id="robot.Robot.setup_oauth">
-<tt class="descname">setup_oauth</tt><big>(</big><em>consumer_key</em>, <em>consumer_secret</em>, <em>server_rpc_base='http://gmodules.com/api/rpc'</em><big>)</big><a class="headerlink" href="#robot.Robot.setup_oauth" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">setup_oauth</tt><big>(</big><em>consumer_key</em>, <em>consumer_secret</em>, <em>server_rpc_base='https://www-opensocial.googleusercontent.com/api/rpc'</em><big>)</big><a class="headerlink" href="#robot.Robot.setup_oauth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Configure this robot to use the oauth&#8217;d json rpc.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1365,6 +1356,11 @@ the library back to the client.</p>
 <em class="property">exception </em><tt class="descclassname">errors.</tt><tt class="descname">Error</tt><a class="headerlink" href="#errors.Error" title="Permalink to this definition">¶</a></dt>
 <dd>Base library error type.</dd></dl>
 
+<dl class="exception">
+<dt id="errors.RpcError">
+<em class="property">exception </em><tt class="descclassname">errors.</tt><tt class="descname">RpcError</tt><a class="headerlink" href="#errors.RpcError" title="Permalink to this definition">¶</a></dt>
+<dd>Wave rpc error.</dd></dl>
+
 </div>
 <div class="section" id="module-ops">
 <h2>The <tt class="xref docutils literal"><span class="pre">ops</span></tt> Module<a class="headerlink" href="#module-ops" title="Permalink to this headline">¶</a></h2>
@@ -1553,8 +1549,24 @@ wavelet_id: The wavelet id that this operation is applied to.</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="ops.OperationQueue.robot_search">
+<tt class="descname">robot_search</tt><big>(</big><em>query</em>, <em>index=None</em>, <em>num_results=None</em><big>)</big><a class="headerlink" href="#ops.OperationQueue.robot_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a search request.</p>
+<p>For now this only makes sense in the data API. Wave does not maintain
+an index for robots so no results will be returned in that scenario.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>query: what to search for
+index: what index to search from
+num_results: how many results to return</dd>
+<dt>Returns:</dt>
+<dd>The operation created.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="ops.OperationQueue.serialize">
-<tt class="descname">serialize</tt><big>(</big><big>)</big><a class="headerlink" href="#ops.OperationQueue.serialize" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">serialize</tt><big>(</big><em>method_prefix=''</em><big>)</big><a class="headerlink" href="#ops.OperationQueue.serialize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1668,6 +1680,19 @@ the actual values of the enums will be the string values.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="util.check_is_valid_proxy_for_id">
+<tt class="descclassname">util.</tt><tt class="descname">check_is_valid_proxy_for_id</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#util.check_is_valid_proxy_for_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given string is a valid proxy id.</p>
+<p>Please see isValidProxyForId(String) for more details on the assertion. This
+method raises a ValueError exception if the input string is not a valid proxy
+id.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>s: the string to be checked.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="util.force_unicode">
 <tt class="descclassname">util.</tt><tt class="descname">force_unicode</tt><big>(</big><em>object</em><big>)</big><a class="headerlink" href="#util.force_unicode" title="Permalink to this definition">¶</a></dt>
 <dd>Return the Unicode string version of object, with UTF-8 encoding.</dd></dl>
@@ -1688,6 +1713,32 @@ the actual values of the enums will be the string values.</p>
 <dt id="util.is_user_defined_new_style_class">
 <tt class="descclassname">util.</tt><tt class="descname">is_user_defined_new_style_class</tt><big>(</big><em>obj</em><big>)</big><a class="headerlink" href="#util.is_user_defined_new_style_class" title="Permalink to this definition">¶</a></dt>
 <dd>Returns whether or not the specified instance is a user-defined type.</dd></dl>
+
+<dl class="function">
+<dt id="util.is_valid_proxy_for_id">
+<tt class="descclassname">util.</tt><tt class="descname">is_valid_proxy_for_id</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#util.is_valid_proxy_for_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given string is a valid proxy id.</p>
+<p>This method asserts whether the string contains reserved characters or not.
+This check is to ensure that when we concatenate the robot id and the proxy
+id, it doesn&#8217;t result in an invalid participant id.</p>
+<p>The reserved characters are:
+- whitespaces
+- non-printing characters: decimal 0 - 31 (hex 00 - 1F), and decimal 127</p>
+<blockquote>
+(hex 7F)</blockquote>
+<ul class="simple">
+<li>&#64;, comma, :, &lt;, and &gt;</li>
+</ul>
+<p>If you need to pass in an arbitrary string as the proxy id, please consider
+encoding the string with a URL encoder (for example, urllib.quote_plus) or
+base64 encoder (for example, base64.b64encode) first.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>s: the string to be checked.</dd>
+<dt>Returns:</dt>
+<dd>True if the string is a valid proxy for id.</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="util.lower_camel_case">
@@ -1732,6 +1783,273 @@ attributes. Lists and dicts are serialized trivially.</p>
 <dt>Returns:</dt>
 <dd>The serialized object.</dd>
 </dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-waveservice">
+<h2>The <tt class="xref docutils literal"><span class="pre">waveservice</span></tt> Module<a class="headerlink" href="#module-waveservice" title="Permalink to this headline">¶</a></h2>
+<p>Base class to use OAuth to talk to the wave service.</p>
+<dl class="class">
+<dt id="waveservice.WaveService">
+<em class="property">class </em><tt class="descclassname">waveservice.</tt><tt class="descname">WaveService</tt><big>(</big><em>use_sandbox=False</em>, <em>server_rpc_base=None</em>, <em>consumer_key='anonymous'</em>, <em>consumer_secret='anonymous'</em>, <em>http_post=None</em><big>)</big><a class="headerlink" href="#waveservice.WaveService" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="waveservice.WaveService.blind_wavelet">
+<tt class="descname">blind_wavelet</tt><big>(</big><em>json</em>, <em>proxy_for_id=None</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.blind_wavelet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a blind wave from a json string.</p>
+<p>Call this method if you have a snapshot of a wave that you
+want to operate on outside of an event. Since the wave might
+have changed since you last saw it, you should take care to
+submit operations that are as safe as possible.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>json: a json object or string containing at least a key</dt>
+<dd>wavelet defining the wavelet and a key blips defining the
+blips in the view.</dd>
+<dt>proxy_for_id: the proxying information that will be set on the wavelet&#8217;s</dt>
+<dd>operation queue.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>A new wavelet with its own operation queue. It the
+responsibility of the caller to make sure this wavelet gets
+submited to the server, either by calling robot.submit() or
+by calling .submit_with() on the returned wavelet.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.fetch_request_token">
+<tt class="descname">fetch_request_token</tt><big>(</big><em>callback=None</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.fetch_request_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches the request token to start the oauth dance.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>callback: the URL to where the service will redirect to after</dt>
+<dd>access is granted.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>An OAuthToken object</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.fetch_wavelet">
+<tt class="descname">fetch_wavelet</tt><big>(</big><em>wave_id</em>, <em>wavelet_id=None</em>, <em>proxy_for_id=None</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.fetch_wavelet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the REST interface to fetch a wave and return it.</p>
+<p>The returned wavelet contains a snapshot of the state of the
+wavelet at that point. It can be used to modify the wavelet,
+but the wavelet might change in between, so treat carefully.</p>
+<p>Also note that the wavelet returned has its own operation
+queue. It the responsibility of the caller to make sure this
+wavelet gets submited to the server, either by calling
+robot.submit() or by calling .submit_with() on the returned
+wavelet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.generate_authorization_url">
+<tt class="descname">generate_authorization_url</tt><big>(</big><em>request_token=None</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.generate_authorization_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the authorization URL (Step 2).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>request_token: An OAuthToken object</dd>
+<dt>Returns:</dt>
+<dd>An authorization URL</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.get_token_from_request">
+<tt class="descname">get_token_from_request</tt><big>(</big><em>oauth_request</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.get_token_from_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to returning the token from a request.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>oauth_request: An OAuthRequest object</dd>
+<dt>Returns:</dt>
+<dd>An OAuthToken object</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.http_post">
+<tt class="descname">http_post</tt><big>(</big><em>url</em>, <em>data</em>, <em>headers</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.http_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute an http post.</p>
+<p>You can provide a different method to use in the constructor. This
+is mostly useful when running on app engine and you want to set
+the time out to something different than the default 5 seconds.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>url: to post to
+body: post body
+headers: extra headers to pass along</dd>
+<dt>Returns:</dt>
+<dd>response_code, returned_page</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.make_rpc">
+<tt class="descname">make_rpc</tt><big>(</big><em>operations</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.make_rpc" title="Permalink to this definition">¶</a></dt>
+<dd>Make an rpc call, submitting the specified operations.</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.new_wave">
+<tt class="descname">new_wave</tt><big>(</big><em>domain</em>, <em>participants=None</em>, <em>message=''</em>, <em>proxy_for_id=None</em>, <em>submit=False</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.new_wave" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new wave with the initial participants on it.</p>
+<p>A new wave is returned with its own operation queue. It the
+responsibility of the caller to make sure this wave gets
+submitted to the server, either by calling robot.submit() or
+by calling .submit_with() on the returned wave.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>domain: the domain to create the wavelet on. This should</dt>
+<dd>in general correspond to the domain of the incoming
+wavelet. (wavelet.domain). Exceptions are situations
+where the robot is calling new_wave outside of an
+event or when the server is handling multiple domains.</dd>
+<dt>participants: initial participants on the wave. The robot</dt>
+<dd>as the creator of the wave is always added.</dd>
+<dt>message: a string that will be passed back to the robot</dt>
+<dd>when the WAVELET_CREATOR event is fired. This is a
+lightweight way to pass around state.</dd>
+<dt>submit: if true, use the active gateway to make a round</dt>
+<dd>trip to the server. This will return immediately an
+actual waveid/waveletid and blipId for the root blip.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.search">
+<tt class="descname">search</tt><big>(</big><em>query</em>, <em>index=None</em>, <em>num_results=None</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a search request.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>query: what to search for, for example [in:inbox]
+index: index of the first result to return
+num_results: how many results to return</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.set_access_token">
+<tt class="descname">set_access_token</tt><big>(</big><em>access_token</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.set_access_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.set_http_post">
+<tt class="descname">set_http_post</tt><big>(</big><em>http_post</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.set_http_post" title="Permalink to this definition">¶</a></dt>
+<dd>Set the http_post handler to use when posting.</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.submit">
+<tt class="descname">submit</tt><big>(</big><em>wavelet_to_submit</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit the pending operations associated with wavelet_to_submit.</p>
+<p>Typically the wavelet will be the result of fetch_wavelet, blind_wavelet
+or new_wave.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waveservice.WaveService.upgrade_to_access_token">
+<tt class="descname">upgrade_to_access_token</tt><big>(</big><em>request_token</em>, <em>verifier=None</em><big>)</big><a class="headerlink" href="#waveservice.WaveService.upgrade_to_access_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrades the request_token to an access token (Step 3).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>request_token: An OAuthToken object or string
+verifier: A verifier string</dd>
+<dt>Returns:</dt>
+<dd>An OAuthToken object</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-search">
+<h2>The <tt class="xref docutils literal"><span class="pre">search</span></tt> Module<a class="headerlink" href="#module-search" title="Permalink to this headline">¶</a></h2>
+<p>Defines classes that are needed to model a search (results).</p>
+<dl class="class">
+<dt id="search.Digest">
+<em class="property">class </em><tt class="descclassname">search.</tt><tt class="descname">Digest</tt><big>(</big><em>json</em><big>)</big><a class="headerlink" href="#search.Digest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Models a single digest.</p>
+<p>A digest is composed of title, wave ID, snippet, and participants.</p>
+<dl class="attribute">
+<dt id="search.Digest.blip_count">
+<tt class="descname">blip_count</tt><a class="headerlink" href="#search.Digest.blip_count" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the number of blips in this wave.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Digest.domain">
+<tt class="descname">domain</tt><a class="headerlink" href="#search.Digest.domain" title="Permalink to this definition">¶</a></dt>
+<dd>Return the domain that the wave belongs to.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Digest.last_modified">
+<tt class="descname">last_modified</tt><a class="headerlink" href="#search.Digest.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the last modified date of the wave.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Digest.participants">
+<tt class="descname">participants</tt><a class="headerlink" href="#search.Digest.participants" title="Permalink to this definition">¶</a></dt>
+<dd>Returns a set of participants on this wave.</dd></dl>
+
+<dl class="method">
+<dt id="search.Digest.serialize">
+<tt class="descname">serialize</tt><big>(</big><big>)</big><a class="headerlink" href="#search.Digest.serialize" title="Permalink to this definition">¶</a></dt>
+<dd>Return a dict of the digest properties.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Digest.snippet">
+<tt class="descname">snippet</tt><a class="headerlink" href="#search.Digest.snippet" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the snippet for the digest.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Digest.title">
+<tt class="descname">title</tt><a class="headerlink" href="#search.Digest.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="search.Digest.unread_count">
+<tt class="descname">unread_count</tt><a class="headerlink" href="#search.Digest.unread_count" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the number of unread blips in this wave.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Digest.wave_id">
+<tt class="descname">wave_id</tt><a class="headerlink" href="#search.Digest.wave_id" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the digest wave id.</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="search.Results">
+<em class="property">class </em><tt class="descclassname">search.</tt><tt class="descname">Results</tt><big>(</big><em>json</em><big>)</big><a class="headerlink" href="#search.Results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Models a set of search results.</p>
+<p>Search results are composed of a list of digests, query, and number of
+results.</p>
+<dl class="attribute">
+<dt id="search.Results.digests">
+<tt class="descname">digests</tt><a class="headerlink" href="#search.Results.digests" title="Permalink to this definition">¶</a></dt>
+<dd>Returns a list of digests.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Results.num_results">
+<tt class="descname">num_results</tt><a class="headerlink" href="#search.Results.num_results" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the number of results for this search.</dd></dl>
+
+<dl class="attribute">
+<dt id="search.Results.query">
+<tt class="descname">query</tt><a class="headerlink" href="#search.Results.query" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the query for this search.</dd></dl>
+
+<dl class="method">
+<dt id="search.Results.serialize">
+<tt class="descname">serialize</tt><big>(</big><big>)</big><a class="headerlink" href="#search.Results.serialize" title="Permalink to this definition">¶</a></dt>
+<dd>Return a dict of the search results properties.</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1871,6 +2189,8 @@ for the robot.</dd>
 <li><a class="reference external" href="#module-errors">The <tt class="docutils literal"><span class="pre">errors</span></tt> Module</a></li>
 <li><a class="reference external" href="#module-ops">The <tt class="docutils literal"><span class="pre">ops</span></tt> Module</a></li>
 <li><a class="reference external" href="#module-util">The <tt class="docutils literal"><span class="pre">util</span></tt> Module</a></li>
+<li><a class="reference external" href="#module-waveservice">The <tt class="docutils literal"><span class="pre">waveservice</span></tt> Module</a></li>
+<li><a class="reference external" href="#module-search">The <tt class="docutils literal"><span class="pre">search</span></tt> Module</a></li>
 <li><a class="reference external" href="#module-appengine_robot_runner">The <tt class="docutils literal"><span class="pre">appengine_robot_runner</span></tt> Module</a></li>
 </ul>
 </li>
