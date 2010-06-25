@@ -97,7 +97,7 @@ class RobotEventHandler(webapp.RequestHandler):
     logging.info('Incoming: %s', json_body)
     json_response = self._robot.process_events(json_body)
     logging.info('Outgoing: %s', json_response)
-    
+
     sys.stdout = saved_stdout
 
     # Build the response.
@@ -196,6 +196,6 @@ def run(robot, debug=False, log_errors=True, extra_handlers=None):
   # arguments from the enclosing scope.
   if log_errors:
     robot.register_handler(events.OperationError, operation_error_handler)
-  robot.http_post = appengine_post
+  robot.set_http_post(appengine_post)
   app = create_robot_webapp(robot, debug, extra_handlers)
   run_wsgi_app(app)

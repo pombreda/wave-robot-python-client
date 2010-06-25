@@ -67,7 +67,7 @@ class TestBlip(unittest.TestCase):
     child = self.new_blip(blipId=CHILD_BLIP_ID,
                           parentBlipId=ROOT_BLIP_ID)
     self.assertEquals(ROOT_BLIP_ID, root.blip_id)
-    self.assertEquals(set([CHILD_BLIP_ID]), root.child_blip_ids)
+    self.assertEquals([CHILD_BLIP_ID], root.child_blip_ids)
     self.assertEquals(set(TEST_BLIP_DATA['contributors']), root.contributors)
     self.assertEquals(TEST_BLIP_DATA['creator'], root.creator)
     self.assertEquals(TEST_BLIP_DATA['content'], root.text)

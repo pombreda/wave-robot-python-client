@@ -160,17 +160,15 @@ class Wavelet(object):
   To guarantee that all blips are available, specify Context.ALL for events.
   """
 
-  def __init__(self, json, blips, robot, operation_queue):
+  def __init__(self, json, blips, operation_queue):
     """Inits this wavelet with JSON data.
 
     Args:
       json: JSON data dictionary from Wave server.
       blips: a dictionary object that can be used to resolve blips.
-      robot: the robot owning this wavelet.
       operation_queue: an OperationQueue object to be used to
         send any generated operations to.
     """
-    self._robot = robot
     self._operation_queue = operation_queue
     self._wave_id = json.get('waveId')
     self._wavelet_id = json.get('waveletId')
@@ -250,11 +248,6 @@ class Wavelet(object):
     """Returns a list of tags for this wavelet."""
     return self._tags
 
-  @property
-  def robot(self):
-    """The robot that owns this wavelet."""
-    return self._robot
-
   def _get_title(self):
     return self._title
 
@@ -332,11 +325,11 @@ class Wavelet(object):
     by fetch_wavelet, then the address of the robot must be added to the
     wavelet by setting wavelet.robot_address before calling proxy_for().
     """
+    util.check_is_valid_proxy_for_id(proxy_for_id)
     self.add_proxying_participant(proxy_for_id)
     operation_queue = self.get_operation_queue().proxy_for(proxy_for_id)
     res = Wavelet(json={},
                   blips={},
-                  robot=self.robot,
                   operation_queue=operation_queue)
     res._wave_id = self._wave_id
     res._wavelet_id = self._wavelet_id
@@ -402,6 +395,7 @@ class Wavelet(object):
 
     instance = blip.Blip(blip_data, self._blips, self._operation_queue)
     self._blips._add(instance)
+    self.root_blip.child_blip_ids.append(instance.blip_id)
     return instance
 
   def delete(self, todelete):

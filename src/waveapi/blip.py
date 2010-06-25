@@ -247,6 +247,10 @@ class Blips(object):
       res[blip_id] = item.serialize()
     return res
 
+  def values(self):
+    """Return the blips themselves."""
+    return self._blips.values()
+
 
 class BlipRefs(object):
   """Represents a set of references to contents in a blip.
@@ -601,7 +605,7 @@ class Blip(object):
     """
     self._blip_id = json.get('blipId')
     self._operation_queue = operation_queue
-    self._child_blip_ids = set(json.get('childBlipIds', []))
+    self._child_blip_ids = list(json.get('childBlipIds', []))
     self._content = json.get('content', '')
     self._contributors = set(json.get('contributors', []))
     self._creator = json.get('creator')
@@ -644,14 +648,14 @@ class Blip(object):
 
   @property
   def child_blip_ids(self):
-    """The set of the ids of this blip's children."""
+    """The list of the ids of this blip's children."""
     return self._child_blip_ids
 
   @property
   def child_blips(self):
-    """The set of blips that are children of this blip."""
-    return set([self._other_blips[blid_id] for blid_id in self._child_blip_ids
-                if blid_id in self._other_blips])
+    """The list of blips that are children of this blip."""
+    return [self._other_blips[blid_id] for blid_id in self._child_blip_ids
+                if blid_id in self._other_blips]
 
   @property
   def contributors(self):
@@ -801,6 +805,7 @@ class Blip(object):
     proxy_for_id, i.e. the robot+<proxy_for_id>@appspot.com address will
     be used.
     """
+    util.check_is_valid_proxy_for_id(proxy_for_id)
     operation_queue = self._operation_queue.proxy_for(proxy_for_id)
     res = Blip(json={},
                other_blips={},

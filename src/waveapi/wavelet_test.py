@@ -67,7 +67,6 @@ class TestWavelet(unittest.TestCase):
     self.all_blips[self.blip.blip_id] = self.blip
     self.wavelet = wavelet.Wavelet(TEST_WAVELET_DATA,
                                    self.all_blips,
-                                   None,
                                    self.operation_queue)
     self.wavelet.robot_address = ROBOT_NAME
 
