@@ -66,9 +66,9 @@ class WaveService(object):
     if server_rpc_base:
       self._server_rpc_base = server_rpc_base
     elif use_sandbox:
-      self._server_rpc_base = WaveService.RPC_URL
-    else:
       self._server_rpc_base = WaveService.SANDBOX_RPC_URL
+    else:
+      self._server_rpc_base = WaveService.RPC_URL
     logging.info('server:' + self._server_rpc_base)
 
     self._http_post = self.http_post
