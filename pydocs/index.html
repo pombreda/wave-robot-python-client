@@ -143,7 +143,7 @@ the data.</p>
 
 <dl class="class">
 <dt id="blip.Blip">
-<em class="property">class </em><tt class="descclassname">blip.</tt><tt class="descname">Blip</tt><big>(</big><em>json</em>, <em>other_blips</em>, <em>operation_queue</em><big>)</big><a class="headerlink" href="#blip.Blip" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">blip.</tt><tt class="descname">Blip</tt><big>(</big><em>json</em>, <em>other_blips</em>, <em>operation_queue</em>, <em>reply_threads=None</em><big>)</big><a class="headerlink" href="#blip.Blip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Models a single blip instance.</p>
 <p>Blips are essentially the documents that make up a conversation. Blips can
 live in a hierarchy of blips. A root blip has no parent blip id, but all
@@ -239,6 +239,11 @@ additional element properties to filter on, like the url of a Gadget.</dd></dl>
 return -1 since it can&#8217;t determine the inline blip status.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="blip.Blip.inline_reply_threads">
+<tt class="descname">inline_reply_threads</tt><a class="headerlink" href="#blip.Blip.inline_reply_threads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="blip.Blip.insert_inline_blip">
 <tt class="descname">insert_inline_blip</tt><big>(</big><em>position</em><big>)</big><a class="headerlink" href="#blip.Blip.insert_inline_blip" title="Permalink to this definition">¶</a></dt>
@@ -290,6 +295,11 @@ be used.</p>
 <dt id="blip.Blip.reply">
 <tt class="descname">reply</tt><big>(</big><big>)</big><a class="headerlink" href="#blip.Blip.reply" title="Permalink to this definition">¶</a></dt>
 <dd>Create and return a reply to this blip.</dd></dl>
+
+<dl class="attribute">
+<dt id="blip.Blip.reply_threads">
+<tt class="descname">reply_threads</tt><a class="headerlink" href="#blip.Blip.reply_threads" title="Permalink to this definition">¶</a></dt>
+<dd>The list of threads that are replies to this blip.</dd></dl>
 
 <dl class="method">
 <dt id="blip.Blip.serialize">
@@ -421,6 +431,32 @@ A dict of serialized blips.</blockquote>
 <div class="section" id="module-wavelet">
 <h2>The <tt class="xref docutils literal"><span class="pre">wavelet</span></tt> Module<a class="headerlink" href="#module-wavelet" title="Permalink to this headline">¶</a></h2>
 <p>Defines classes that are needed to model a wavelet.</p>
+<dl class="class">
+<dt id="wavelet.BlipThread">
+<em class="property">class </em><tt class="descclassname">wavelet.</tt><tt class="descname">BlipThread</tt><big>(</big><em>id</em>, <em>location</em>, <em>blip_ids</em>, <em>all_blips</em>, <em>operation_queue</em><big>)</big><a class="headerlink" href="#wavelet.BlipThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Models a group of blips in a wave.</p>
+<dl class="attribute">
+<dt id="wavelet.BlipThread.blip_ids">
+<tt class="descname">blip_ids</tt><a class="headerlink" href="#wavelet.BlipThread.blip_ids" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the blip IDs in this thread.</dd></dl>
+
+<dl class="attribute">
+<dt id="wavelet.BlipThread.blips">
+<tt class="descname">blips</tt><a class="headerlink" href="#wavelet.BlipThread.blips" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the blips in this thread.</dd></dl>
+
+<dl class="attribute">
+<dt id="wavelet.BlipThread.id">
+<tt class="descname">id</tt><a class="headerlink" href="#wavelet.BlipThread.id" title="Permalink to this definition">¶</a></dt>
+<dd>Returns this thread&#8217;s id.</dd></dl>
+
+<dl class="attribute">
+<dt id="wavelet.BlipThread.location">
+<tt class="descname">location</tt><a class="headerlink" href="#wavelet.BlipThread.location" title="Permalink to this definition">¶</a></dt>
+<dd>Returns this thread&#8217;s location.</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="wavelet.DataDocs">
 <em class="property">class </em><tt class="descclassname">wavelet.</tt><tt class="descname">DataDocs</tt><big>(</big><em>init_docs</em>, <em>wave_id</em>, <em>wavelet_id</em>, <em>operation_queue</em><big>)</big><a class="headerlink" href="#wavelet.DataDocs" title="Permalink to this definition">¶</a></dt>
@@ -592,6 +628,11 @@ wavelet by setting wavelet.robot_address before calling proxy_for().</p>
 <dt id="wavelet.Wavelet.root_blip">
 <tt class="descname">root_blip</tt><a class="headerlink" href="#wavelet.Wavelet.root_blip" title="Permalink to this definition">¶</a></dt>
 <dd>Returns this wavelet&#8217;s root blip.</dd></dl>
+
+<dl class="attribute">
+<dt id="wavelet.Wavelet.root_thread">
+<tt class="descname">root_thread</tt><a class="headerlink" href="#wavelet.Wavelet.root_thread" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the root thread of this wavelet.</dd></dl>
 
 <dl class="method">
 <dt id="wavelet.Wavelet.serialize">
@@ -903,7 +944,7 @@ mimeType, attachmentId and attachmentUrl are sent via events.</p>
 properties of an element it can only interact with the specific types that
 the element represents.</p>
 <p>Properties of elements are both accessible directly (image.url) and through
-the properties dictionary (image.properties[&#8216;url&#8217;]). In general Element
+the get method (image.get(&#8216;url&#8217;)). In general, Element
 should not be instantiated by robots, but rather rely on the derived classes.</p>
 <dl class="classmethod">
 <dt id="element.Element.from_json">

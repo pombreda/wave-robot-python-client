@@ -59,6 +59,18 @@ The :mod:`util` Module
    :members:
    :undoc-members:
 
+The :mod:`waveservice` Module
+-------------------------
+.. automodule:: waveservice
+   :members:
+   :undoc-members:
+
+The :mod:`search` Module
+-------------------------
+.. automodule:: search
+   :members:
+   :undoc-members:
+
 The :mod:`appengine_robot_runner` Module
 -------------------------
 .. automodule:: appengine_robot_runner
