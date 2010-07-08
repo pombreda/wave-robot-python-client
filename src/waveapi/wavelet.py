@@ -153,6 +153,40 @@ class Tags(object):
     return list(self._tags)
 
 
+class BlipThread(object):
+  """ Models a group of blips in a wave."""
+
+  def __init__(self, id, location, blip_ids, all_blips, operation_queue):
+    self._id = id
+    self._location = location
+    self._blip_ids = blip_ids
+    self._all_blips = all_blips
+    self._operation_queue = operation_queue
+
+  @property
+  def id(self):
+    """Returns this thread's id."""
+    return self._id
+
+  @property
+  def location(self):
+    """Returns this thread's location."""
+    return self._location
+
+  @property
+  def blip_ids(self):
+    """Returns the blip IDs in this thread."""
+    return self._blip_ids
+
+  @property
+  def blips(self):
+    """Returns the blips in this thread."""
+    blips = []
+    for blip_id in self._blip_ids:
+      blips.append(self._all_blips[blip_id])
+    return blips
+
+
 class Wavelet(object):
   """Models a single wavelet.
 
@@ -197,6 +231,13 @@ class Wavelet(object):
       self._root_blip = self._blips[self._root_blip_id]
     else:
       self._root_blip = None
+    root_thread_data = json.get('rootThread')
+    if root_thread_data:
+      self._root_thread = BlipThread('',
+                                  root_thread_data.get('location'),
+                                  root_thread_data.get('blipIds', []),
+                                  blips,
+                                  operation_queue)
     self._robot_address = None
 
   @property
@@ -242,6 +283,11 @@ class Wavelet(object):
   def participants(self):
     """Returns a set of participants on this wavelet."""
     return self._participants
+
+  @property
+  def root_thread(self):
+    """Returns the root thread of this wavelet."""
+    return self._root_thread
 
   @property
   def tags(self):

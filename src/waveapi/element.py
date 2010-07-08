@@ -35,7 +35,7 @@ class Element(object):
   the element represents.
 
   Properties of elements are both accessible directly (image.url) and through
-  the properties dictionary (image.properties['url']). In general Element
+  the get method (image.get('url')). In general, Element
   should not be instantiated by robots, but rather rely on the derived classes.
   """
 

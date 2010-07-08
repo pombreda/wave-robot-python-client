@@ -232,47 +232,11 @@ class Robot(object):
               'profileUrl': self.profile_url}
     return simplejson.dumps(data)
 
-  def _wavelet_from_json(self, json, pending_ops):
-    """Construct a wavelet from the passed json.
-
-    The json should either contain a wavelet and a blips record that
-    define those respective object. The returned wavelet
-    will be constructed using the passed pending_ops
-    OperationQueue.
-    Alternatively the json can be the result of a previous
-    wavelet.serialize() call. In that case the blips will
-    be contaned in the wavelet record.
-    """
-    if isinstance(json, basestring):
-      json = simplejson.loads(json)
-
-    blips = {}
-    for blip_id, raw_blip_data in json['blips'].items():
-      blips[blip_id] = blip.Blip(raw_blip_data, blips, pending_ops)
-
-    if 'wavelet' in json:
-      raw_wavelet_data = json['wavelet']
-    elif 'waveletData' in json:
-      raw_wavelet_data = json['waveletData']
-    else:
-      raw_wavelet_data = json
-    wavelet_blips = {}
-    wavelet_id = raw_wavelet_data['waveletId']
-    wave_id = raw_wavelet_data['waveId']
-    for blip_id, instance in blips.items():
-      if instance.wavelet_id == wavelet_id and instance.wave_id == wave_id:
-        wavelet_blips[blip_id] = instance
-    result = wavelet.Wavelet(raw_wavelet_data, wavelet_blips, pending_ops)
-    robot_address = json.get('robotAddress')
-    if robot_address:
-      result.robot_address = robot_address
-    return result
-
   def process_events(self, json):
     """Process an incoming set of events encoded as json."""
     parsed = simplejson.loads(json)
     pending_ops = ops.OperationQueue()
-    event_wavelet = self._wavelet_from_json(parsed, pending_ops)
+    event_wavelet = self.get_waveservice()._wavelet_from_json(parsed, pending_ops)
 
     for event_data in parsed['events']:
       for payload in self._handlers.get(event_data['type'], []):

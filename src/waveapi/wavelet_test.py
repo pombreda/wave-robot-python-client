@@ -39,6 +39,11 @@ TEST_WAVELET_DATA = {
     'waveId': 'test.com!w+g3h3im',
     'waveletId': 'test.com!root+conv',
     'tags': ['tag1', 'tag2'],
+    'rootThread': {
+        'id': '',
+        'location': -1,
+        'blipIds': ['blip-1']
+    }
 }
 
 TEST_BLIP_DATA = {
@@ -52,6 +57,8 @@ TEST_BLIP_DATA = {
     'waveId': TEST_WAVELET_DATA['waveId'],
     'elements': {},
     'waveletId': TEST_WAVELET_DATA['waveletId'],
+    'replyThreadIds': [],
+    'threadId': ''
 }
 
 
@@ -83,6 +90,11 @@ class TestWavelet(unittest.TestCase):
     self.assertEquals(TEST_WAVELET_DATA['title'], w.title)
     self.assertEquals(TEST_WAVELET_DATA['waveId'], w.wave_id)
     self.assertEquals(TEST_WAVELET_DATA['waveletId'], w.wavelet_id)
+    self.assertEquals(TEST_WAVELET_DATA['rootThread']['id'], w.root_thread.id)
+    self.assertEquals(TEST_WAVELET_DATA['rootThread']['location'],
+                      w.root_thread.location)
+    self.assertEquals(len(TEST_WAVELET_DATA['rootThread']['blipIds']),
+                      len(w.root_thread.blips))
     self.assertEquals('test.com', w.domain)
 
   def testWaveletMethods(self):

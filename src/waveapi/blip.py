@@ -593,7 +593,7 @@ class Blip(object):
   the Document object.
   """ 
 
-  def __init__(self, json, other_blips, operation_queue):
+  def __init__(self, json, other_blips, operation_queue, reply_threads=None):
     """Inits this blip with JSON data.
 
     Args:
@@ -604,6 +604,7 @@ class Blip(object):
         in.
     """
     self._blip_id = json.get('blipId')
+    self._reply_threads = reply_threads or []
     self._operation_queue = operation_queue
     self._child_blip_ids = list(json.get('childBlipIds', []))
     self._content = json.get('content', '')
@@ -656,6 +657,20 @@ class Blip(object):
     """The list of blips that are children of this blip."""
     return [self._other_blips[blid_id] for blid_id in self._child_blip_ids
                 if blid_id in self._other_blips]
+
+  @property
+  def reply_threads(self):
+    """The list of threads that are replies to this blip."""
+    return self._reply_threads
+
+  @property
+  def inline_reply_threads(self):
+    # TODO: Consider moving to constructor
+    inline_reply_threads = []
+    for reply_thread in self._reply_threads:
+      if reply_thread.location > -1:
+        inline_reply_threads.append(reply_thread)
+    return inline_reply_threads
 
   @property
   def contributors(self):

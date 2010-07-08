@@ -259,9 +259,27 @@ class WaveService(object):
     if isinstance(json, basestring):
       json = simplejson.loads(json)
 
+    # Create blips dict so we can pass into BlipThread objects
     blips = {}
+
+    # Setup threads first, as the Blips and Wavelet need to know about them
+    threads = {}
+    threads_data = json.get('threads', {})
+    # Create remaining thread objects
+    for thread_id, raw_thread_data in threads_data.items():
+      threads[thread_id] = wavelet.BlipThread(thread_id,
+          raw_thread_data.get('location'), raw_thread_data.get('blipIds', []),
+          blips, pending_ops)
+
+    # Setup the blips, pass  in reply threads
     for blip_id, raw_blip_data in json['blips'].items():
-      blips[blip_id] = blip.Blip(raw_blip_data, blips, pending_ops)
+      reply_threads = []
+      reply_thread_ids = raw_blip_data.get('replyThreadIds', [])
+      for reply_thread_id in reply_thread_ids:
+        reply_threads.append(threads[reply_thread_id])
+      blips[blip_id] = blip.Blip(raw_blip_data, blips, pending_ops,
+                                 reply_threads=reply_threads)
+
 
     if 'wavelet' in json:
       raw_wavelet_data = json['wavelet']
@@ -276,9 +294,11 @@ class WaveService(object):
       if instance.wavelet_id == wavelet_id and instance.wave_id == wave_id:
         wavelet_blips[blip_id] = instance
     result = wavelet.Wavelet(raw_wavelet_data, wavelet_blips, pending_ops)
+
     robot_address = json.get('robotAddress')
     if robot_address:
       result.robot_address = robot_address
+
     return result
 
   def search(self, query, index=None, num_results=None):

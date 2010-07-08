@@ -56,7 +56,7 @@ EVENTS_JSON = ('[{"timestamp":1242079611003,'
                     '"participantsAdded":["monty@appspot.com"]},'
                 '"type":"WAVELET_PARTICIPANTS_CHANGED"}]')
 
-TEST_JSON = '{"blips":%s,"wavelet":%s,"events":%s}' % (
+TEST_JSON = '{"blips":%s,"wavelet":%s,"events":%s, "threads": {}}' % (
     BLIP_JSON, WAVELET_JSON, EVENTS_JSON)
 
 NEW_WAVE_JSON = [{"data":
