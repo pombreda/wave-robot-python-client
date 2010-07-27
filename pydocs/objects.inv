@@ -82,6 +82,7 @@ blip.Annotation.VERTICAL_ALIGN attribute index.html
 blip.Blip.version attribute index.html
 robot.Robot.profile_json method index.html
 element.Line.ALIGN_RIGHT attribute index.html
+wavelet.BlipThread.serialize method index.html
 appengine_robot_runner.RobotVerifyTokenHandler class index.html
 blip.Blip class index.html
 appengine_robot_runner.run function index.html
@@ -119,6 +120,7 @@ blip.BlipRefs.insert_after method index.html
 blip.Blip.child_blips attribute index.html
 events.Context.SELF attribute index.html
 search.Results.query attribute index.html
+blip.Blip.thread attribute index.html
 wavelet.BlipThread class index.html
 blip.Annotations.names method index.html
 blip.Blip.at method index.html
@@ -186,6 +188,7 @@ wavelet.Wavelet.creator attribute index.html
 blip.BlipRefs.value method index.html
 blip.Blip.reply method index.html
 wavelet.BlipThread.id attribute index.html
+ops.OperationQueue.blip_continue_thread method index.html
 wavelet.Participants.get_role method index.html
 blip.Annotation.FONT_FAMILY attribute index.html
 ops.Operation class index.html
@@ -197,6 +200,7 @@ blip.Annotations.serialize method index.html
 blip.Blip.append method index.html
 element.Input class index.html
 blip.Annotation.BACKGROUND_COLOR attribute index.html
+blip.Blip.continue_thread method index.html
 search.Digest class index.html
 events.WaveletTitleChanged class index.html
 element.TextArea.from_props classmethod index.html

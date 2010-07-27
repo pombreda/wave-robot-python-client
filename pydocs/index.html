@@ -143,7 +143,7 @@ the data.</p>
 
 <dl class="class">
 <dt id="blip.Blip">
-<em class="property">class </em><tt class="descclassname">blip.</tt><tt class="descname">Blip</tt><big>(</big><em>json</em>, <em>other_blips</em>, <em>operation_queue</em>, <em>reply_threads=None</em><big>)</big><a class="headerlink" href="#blip.Blip" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">blip.</tt><tt class="descname">Blip</tt><big>(</big><em>json</em>, <em>other_blips</em>, <em>operation_queue</em>, <em>thread=None</em>, <em>reply_threads=None</em><big>)</big><a class="headerlink" href="#blip.Blip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Models a single blip instance.</p>
 <p>Blips are essentially the documents that make up a conversation. Blips can
 live in a hierarchy of blips. A root blip has no parent blip id, but all
@@ -196,6 +196,11 @@ additional element properties to filter on, like the url of a Gadget.</dd></dl>
 <dt id="blip.Blip.child_blips">
 <tt class="descname">child_blips</tt><a class="headerlink" href="#blip.Blip.child_blips" title="Permalink to this definition">¶</a></dt>
 <dd>The list of blips that are children of this blip.</dd></dl>
+
+<dl class="method">
+<dt id="blip.Blip.continue_thread">
+<tt class="descname">continue_thread</tt><big>(</big><big>)</big><a class="headerlink" href="#blip.Blip.continue_thread" title="Permalink to this definition">¶</a></dt>
+<dd>Create and return a blip in the same thread as this blip.</dd></dl>
 
 <dl class="attribute">
 <dt id="blip.Blip.contributors">
@@ -312,6 +317,11 @@ be used.</p>
 <dd>Returns the raw text content of this document.</dd></dl>
 
 <dl class="attribute">
+<dt id="blip.Blip.thread">
+<tt class="descname">thread</tt><a class="headerlink" href="#blip.Blip.thread" title="Permalink to this definition">¶</a></dt>
+<dd>The thread that this blip belongs to.</dd></dl>
+
+<dl class="attribute">
 <dt id="blip.Blip.version">
 <tt class="descname">version</tt><a class="headerlink" href="#blip.Blip.version" title="Permalink to this definition">¶</a></dt>
 <dd>The version of this blip.</dd></dl>
@@ -387,7 +397,16 @@ that yields name/value pairs. The name and value should both be strings.</p>
 <dl class="method">
 <dt id="blip.BlipRefs.update_element">
 <tt class="descname">update_element</tt><big>(</big><em>new_values</em><big>)</big><a class="headerlink" href="#blip.BlipRefs.update_element" title="Permalink to this definition">¶</a></dt>
-<dd>Update an existing element with a set of new values.</dd></dl>
+<dd><p>Update an existing element with a set of new values.</p>
+<p>For example, this code would update a button value:
+button.update_element({&#8216;value&#8217;: &#8216;Yes&#8217;})
+This code would update the &#8216;seen&#8217; key in a gadget&#8217;s state:
+gadget.update_element({&#8216;seen&#8217;: &#8216;yes&#8217;})</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>new_values: A dictionary of property names and values.</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="blip.BlipRefs.value">
@@ -454,6 +473,11 @@ A dict of serialized blips.</blockquote>
 <dt id="wavelet.BlipThread.location">
 <tt class="descname">location</tt><a class="headerlink" href="#wavelet.BlipThread.location" title="Permalink to this definition">¶</a></dt>
 <dd>Returns this thread&#8217;s location.</dd></dl>
+
+<dl class="method">
+<dt id="wavelet.BlipThread.serialize">
+<tt class="descname">serialize</tt><big>(</big><big>)</big><a class="headerlink" href="#wavelet.BlipThread.serialize" title="Permalink to this definition">¶</a></dt>
+<dd>Returns serialized properties.</dd></dl>
 
 </dd></dl>
 
@@ -532,7 +556,7 @@ A dict of serialized blips.</blockquote>
 
 <dl class="class">
 <dt id="wavelet.Wavelet">
-<em class="property">class </em><tt class="descclassname">wavelet.</tt><tt class="descname">Wavelet</tt><big>(</big><em>json</em>, <em>blips</em>, <em>operation_queue</em><big>)</big><a class="headerlink" href="#wavelet.Wavelet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wavelet.</tt><tt class="descname">Wavelet</tt><big>(</big><em>json</em>, <em>blips</em>, <em>root_thread</em>, <em>operation_queue</em><big>)</big><a class="headerlink" href="#wavelet.Wavelet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Models a single wavelet.</p>
 <p>A single wavelet is composed of metadata, participants, and its blips.
 To guarantee that all blips are available, specify Context.ALL for events.</p>
@@ -1461,6 +1485,20 @@ and blip id to generate an operation.</p>
 For example, calling wavelet_append_blip will not result in a new blip
 being added to the robot, only an operation to be applied on the
 server.</p>
+<dl class="method">
+<dt id="ops.OperationQueue.blip_continue_thread">
+<tt class="descname">blip_continue_thread</tt><big>(</big><em>wave_id</em>, <em>wavelet_id</em>, <em>blip_id</em><big>)</big><a class="headerlink" href="#ops.OperationQueue.blip_continue_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a blip in same thread as specified blip.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>wave_id: The wave id owning that this operation is applied to.
+wavelet_id: The wavelet id that this operation is applied to.
+blip_id: The blip id that this operation is applied to.</dd>
+<dt>Returns:</dt>
+<dd>JSON of blip for which further operations can be applied.</dd>
+</dl>
+</dd></dl>
+
 <dl class="method">
 <dt id="ops.OperationQueue.blip_create_child">
 <tt class="descname">blip_create_child</tt><big>(</big><em>wave_id</em>, <em>wavelet_id</em>, <em>blip_id</em><big>)</big><a class="headerlink" href="#ops.OperationQueue.blip_create_child" title="Permalink to this definition">¶</a></dt>
