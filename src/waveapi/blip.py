@@ -891,7 +891,7 @@ class Blip(object):
     """Create and return a blip in the same thread as this blip."""
     blip_data = self._operation_queue.blip_continue_thread(self.wave_id,
                                                            self.wavelet_id,
-                                                           self.parent_blip_id)
+                                                           self.blip_id)
     new_blip = Blip(blip_data, self._other_blips, self._operation_queue,
                     thread=self._thread)
     if self._thread:

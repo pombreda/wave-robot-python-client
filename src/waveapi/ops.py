@@ -394,7 +394,7 @@ class OperationQueue(object):
     Returns:
       JSON of blip for which further operations can be applied.
     """
-    blip_data = self._new_blipdata(wave_id, wavelet_id, parent_blip_id=blip_id)
+    blip_data = self._new_blipdata(wave_id, wavelet_id)
     self.new_operation(BLIP_CONTINUE_THREAD, wave_id, wavelet_id,
                        blipId=blip_id,
                        blipData=blip_data)
