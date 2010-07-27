@@ -186,6 +186,17 @@ class BlipThread(object):
       blips.append(self._all_blips[blip_id])
     return blips
 
+  def _add_internal(self, blip):
+    """Adds a blip to the thread, sends out no operations."""
+    self._blip_ids.append(blip.blip_id)
+    self._all_blips[blip.blip_id] = blip
+
+  def serialize(self):
+    """ Returns serialized properties."""
+    return {'id': self._id,
+            'location': self._location,
+            'blipIds': self._blip_ids}
+
 
 class Wavelet(object):
   """Models a single wavelet.
@@ -194,16 +205,18 @@ class Wavelet(object):
   To guarantee that all blips are available, specify Context.ALL for events.
   """
 
-  def __init__(self, json, blips, operation_queue):
+  def __init__(self, json, blips, root_thread, operation_queue):
     """Inits this wavelet with JSON data.
 
     Args:
       json: JSON data dictionary from Wave server.
       blips: a dictionary object that can be used to resolve blips.
+      root_thread: a BlipThread object containing the blips in the root thread.
       operation_queue: an OperationQueue object to be used to
         send any generated operations to.
     """
     self._operation_queue = operation_queue
+    self._root_thread = root_thread
     self._wave_id = json.get('waveId')
     self._wavelet_id = json.get('waveletId')
     self._creator = json.get('creator')
@@ -231,13 +244,6 @@ class Wavelet(object):
       self._root_blip = self._blips[self._root_blip_id]
     else:
       self._root_blip = None
-    root_thread_data = json.get('rootThread')
-    if root_thread_data:
-      self._root_thread = BlipThread('',
-                                  root_thread_data.get('location'),
-                                  root_thread_data.get('blipIds', []),
-                                  blips,
-                                  operation_queue)
     self._robot_address = None
 
   @property
@@ -356,7 +362,8 @@ class Wavelet(object):
             'participants': self._participants.serialize(),
             'title': self._title,
             'blips': self._blips.serialize(),
-            'rootBlipId': self._root_blip_id
+            'rootBlipId': self._root_blip_id,
+            'rootThread': self._root_thread.serialize()
            }
 
   def proxy_for(self, proxy_for_id):
@@ -375,7 +382,7 @@ class Wavelet(object):
     self.add_proxying_participant(proxy_for_id)
     operation_queue = self.get_operation_queue().proxy_for(proxy_for_id)
     res = Wavelet(json={},
-                  blips={},
+                  blips={}, root_thread=None,
                   operation_queue=operation_queue)
     res._wave_id = self._wave_id
     res._wavelet_id = self._wavelet_id
@@ -388,6 +395,7 @@ class Wavelet(object):
     res._raw_data = self._raw_data
     res._blips = self._blips
     res._root_blip = self._root_blip
+    res._root_thread = self._root_thread
     return res
 
   def add_proxying_participant(self, id):

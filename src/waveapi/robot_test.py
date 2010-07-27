@@ -36,6 +36,7 @@ BLIP_JSON = ('{"wdykLROk*13":'
                'annotations":[{"range":{"start":0,"end":1},'
                    '"name":"user/e/davidbyttow@google.com","value":"David"}],'
                '"elements":{},'
+               '"threadId": "",'
                '"childBlipIds":[]}'
              '}')
 
@@ -48,6 +49,8 @@ WAVELET_JSON = ('{"lastModifiedTime":1242079611003,'
                  '"waveId":"test.com!wdykLROk*11",'
                  '"participants":["someguy@test.com","monty@appspot.com"],'
                  '"creator":"someguy@test.com",'
+                 '"rootThread": '
+                 '{"id":"", "location": "-1", "blipIds": ["wdykLROk*13"]},'
                  '"version":5}')
 
 EVENTS_JSON = ('[{"timestamp":1242079611003,'
@@ -65,13 +68,6 @@ NEW_WAVE_JSON = [{"data":
                    "wavesandbox.com!w+LrODcLZkDlt"},
                   "id": "op2"}]
 
-NEW_WAVE_JSON_OLD = [{'data':
-                      [{'data':
-                        {'waveletId': 'googlewave.com!conv+root',
-                         'blipId': 'b+VqQXQbZkCP1',
-                         'waveId': 'googlewave.com!w+VqQXQbZkCP0'},
-                         'id': 'wavelet.create1265055048410'}],
-                      'id': 'op10'}];
 
 class TestRobot(unittest.TestCase):
   """Tests for testing the basic parsing of json in robots."""
@@ -83,9 +79,6 @@ class TestRobot(unittest.TestCase):
     self.robot.get_waveservice().submit = lambda x: NEW_WAVE_JSON
     new_wave = self.robot.new_wave('wavesandbox.com', submit=True)
     self.assertEqual('wavesandbox.com!w+LrODcLZkDlt', new_wave.wave_id)
-    self.robot.get_waveservice().submit = lambda x: NEW_WAVE_JSON_OLD
-    new_wave = self.robot.new_wave('googlewave.com', submit=True)
-    self.assertEqual('googlewave.com!w+VqQXQbZkCP0', new_wave.wave_id)
 
   def testEventParsing(self):
     def check(event, wavelet):

@@ -35,6 +35,7 @@ WAVELET_ADD_PARTICIPANT = 'wavelet.participant.add'
 WAVELET_DATADOC_SET = 'wavelet.datadoc.set'
 WAVELET_MODIFY_TAG = 'wavelet.modifyTag'
 WAVELET_MODIFY_PARTICIPANT_ROLE = 'wavelet.modifyParticipantRole'
+BLIP_CONTINUE_THREAD = 'blip.continueThread'
 BLIP_CREATE_CHILD = 'blip.createChild'
 BLIP_DELETE = 'blip.delete'
 DOCUMENT_APPEND_MARKUP = 'document.appendMarkup'
@@ -381,6 +382,24 @@ class OperationQueue(object):
                        blipId=blip_id,
                        blipData=blip_data)
     return blip_data
+
+  def blip_continue_thread(self, wave_id, wavelet_id, blip_id):
+    """Creates a blip in same thread as specified blip.
+
+    Args:
+      wave_id: The wave id owning that this operation is applied to.
+      wavelet_id: The wavelet id that this operation is applied to.
+      blip_id: The blip id that this operation is applied to.
+
+    Returns:
+      JSON of blip for which further operations can be applied.
+    """
+    blip_data = self._new_blipdata(wave_id, wavelet_id, parent_blip_id=blip_id)
+    self.new_operation(BLIP_CONTINUE_THREAD, wave_id, wavelet_id,
+                       blipId=blip_id,
+                       blipData=blip_data)
+    return blip_data
+
 
   def blip_delete(self, wave_id, wavelet_id, blip_id):
     """Deletes the specified blip.

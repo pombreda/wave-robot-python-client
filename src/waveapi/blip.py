@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import UserDict
+
 import element
 import errors
 
@@ -87,7 +89,7 @@ class Annotation(object):
                       'end': self._end}}
 
 
-class Annotations(object):
+class Annotations(object, UserDict.DictMixin):
   """A dictionary-like object containing the annotations, keyed by name."""
 
   def __init__(self, operation_queue, blip):
@@ -201,11 +203,14 @@ class Annotations(object):
     return res
 
 
-class Blips(object):
+class Blips(object, UserDict.DictMixin):
   """A dictionary-like object containing the blips, keyed on blip ID."""
 
   def __init__(self, blips):
     self._blips = blips
+
+  def __contains__(self, blip_id):
+    return blip_id in self._blips
 
   def __getitem__(self, blip_id):
     return self._blips[blip_id]
@@ -427,7 +432,7 @@ class BlipRefs(object):
           blip.annotations._delete_internal(next, start, end)
         elif modify_how == BlipRefs.UPDATE_ELEMENT:
           el = blip._elements.get(start)
-          if not element:
+          if not el:
             raise ValueError('No element found at index %s' % start)
           # the passing around of types this way feels a bit dirty:
           updated_elements.append(element.Element.from_json({'type': el.type,
@@ -539,7 +544,16 @@ class BlipRefs(object):
     return self._execute(BlipRefs.CLEAR_ANNOTATION, name)
 
   def update_element(self, new_values):
-    """Update an existing element with a set of new values."""
+    """Update an existing element with a set of new values.
+
+    For example, this code would update a button value:
+    button.update_element({'value': 'Yes'})
+    This code would update the 'seen' key in a gadget's state:
+    gadget.update_element({'seen': 'yes'})
+
+    Args:
+      new_values: A dictionary of property names and values.
+    """
     return self._execute(BlipRefs.UPDATE_ELEMENT, new_values)
 
   def __nonzero__(self):
@@ -593,18 +607,22 @@ class Blip(object):
   the Document object.
   """ 
 
-  def __init__(self, json, other_blips, operation_queue, reply_threads=None):
+  def __init__(self, json, other_blips, operation_queue, thread=None,
+               reply_threads=None):
     """Inits this blip with JSON data.
 
     Args:
       json: JSON data dictionary from Wave server.
       other_blips: A dictionary like object that can be used to resolve
         ids of blips to blips.
-      operation_queue: an OperationQueue object to store generated operations
+      thread: The BlipThread object that this blip belongs to.
+      reply_threads: A list BlipThread objects that are replies to this blip.
+      operation_queue: An OperationQueue object to store generated operations
         in.
     """
     self._blip_id = json.get('blipId')
     self._reply_threads = reply_threads or []
+    self._thread = thread
     self._operation_queue = operation_queue
     self._child_blip_ids = list(json.get('childBlipIds', []))
     self._content = json.get('content', '')
@@ -657,6 +675,11 @@ class Blip(object):
     """The list of blips that are children of this blip."""
     return [self._other_blips[blid_id] for blid_id in self._child_blip_ids
                 if blid_id in self._other_blips]
+
+  @property
+  def thread(self):
+    """The thread that this blip belongs to."""
+    return self._thread
 
   @property
   def reply_threads(self):
@@ -863,6 +886,18 @@ class Blip(object):
     """Convenience method covering a common pattern."""
     return BlipRefs.all(self, findwhat=None).insert_after(
         what, bundled_annotations=bundled_annotations)
+
+  def continue_thread(self):
+    """Create and return a blip in the same thread as this blip."""
+    blip_data = self._operation_queue.blip_continue_thread(self.wave_id,
+                                                           self.wavelet_id,
+                                                           self.parent_blip_id)
+    new_blip = Blip(blip_data, self._other_blips, self._operation_queue,
+                    thread=self._thread)
+    if self._thread:
+      self._thread._add_internal(new_blip)
+    self._other_blips._add(new_blip)
+    return new_blip
 
   def reply(self):
     """Create and return a reply to this blip."""

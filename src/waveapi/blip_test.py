@@ -201,9 +201,15 @@ class TestBlip(unittest.TestCase):
     self.assertEquals(blip.blip_id, otherblip.parent_blip_id)
     self.assertEquals(2, len(self.all_blips))
 
+    another = blip.continue_thread()
+    another.append('hello world')
+    self.assertEquals('hello world', another.text)
+    self.assertEquals(blip.parent_blip_id, another.parent_blip_id)
+    self.assertEquals(3, len(self.all_blips))
+
     inline = blip.insert_inline_blip(3)
     self.assertEquals(blip.blip_id, inline.parent_blip_id)
-    self.assertEquals(3, len(self.all_blips))
+    self.assertEquals(4, len(self.all_blips))
 
   def testInsertInlineBlipCantInsertAtTheBeginning(self):
     blip = self.new_blip(blipId=ROOT_BLIP_ID)

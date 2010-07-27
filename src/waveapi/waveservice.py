@@ -188,7 +188,7 @@ class WaveService(object):
     try:
       f = urllib2.urlopen(req)
       return f.code, f.read()
-    except urllib2.URLError, e:
+    except urllib2.HTTPError, e:
       return e.code, e.read()
 
   def make_rpc(self, operations):
@@ -264,6 +264,7 @@ class WaveService(object):
 
     # Setup threads first, as the Blips and Wavelet need to know about them
     threads = {}
+    # In case of blind_wavelet or new_wave, we may not have threads indo
     threads_data = json.get('threads', {})
     # Create remaining thread objects
     for thread_id, raw_thread_data in threads_data.items():
@@ -271,29 +272,30 @@ class WaveService(object):
           raw_thread_data.get('location'), raw_thread_data.get('blipIds', []),
           blips, pending_ops)
 
-    # Setup the blips, pass  in reply threads
-    for blip_id, raw_blip_data in json['blips'].items():
-      reply_threads = []
-      reply_thread_ids = raw_blip_data.get('replyThreadIds', [])
-      for reply_thread_id in reply_thread_ids:
-        reply_threads.append(threads[reply_thread_id])
-      blips[blip_id] = blip.Blip(raw_blip_data, blips, pending_ops,
-                                 reply_threads=reply_threads)
-
-
+    # If being called from blind_wavelet, wavelet is top level info
     if 'wavelet' in json:
       raw_wavelet_data = json['wavelet']
     elif 'waveletData' in json:
       raw_wavelet_data = json['waveletData']
     else:
       raw_wavelet_data = json
-    wavelet_blips = {}
-    wavelet_id = raw_wavelet_data['waveletId']
-    wave_id = raw_wavelet_data['waveId']
-    for blip_id, instance in blips.items():
-      if instance.wavelet_id == wavelet_id and instance.wave_id == wave_id:
-        wavelet_blips[blip_id] = instance
-    result = wavelet.Wavelet(raw_wavelet_data, wavelet_blips, pending_ops)
+    root_thread_data = raw_wavelet_data.get('rootThread')
+    root_thread = wavelet.BlipThread('',
+                             root_thread_data.get('location'),
+                             root_thread_data.get('blipIds', []),
+                             blips,
+                             pending_ops)
+    threads[''] = root_thread
+
+    # Setup the blips, pass  in reply threads
+    for blip_id, raw_blip_data in json['blips'].items():
+      reply_threads = [threads[id] for id in raw_blip_data.get('replyThreadIds',
+                                                               [])]
+      thread = threads.get(raw_blip_data.get('threadId'))
+      blips[blip_id] = blip.Blip(raw_blip_data, blips, pending_ops,
+                                 thread=thread, reply_threads=reply_threads)
+
+    result = wavelet.Wavelet(raw_wavelet_data, blips, root_thread, pending_ops)
 
     robot_address = json.get('robotAddress')
     if robot_address:
@@ -347,25 +349,26 @@ class WaveService(object):
     if not isinstance(message, basestring):
       message = simplejson.dumps(message)
 
+    # Create temporary wavelet data
     blip_data, wavelet_data = operation_queue.robot_create_wavelet(
         domain=domain,
         participants=participants,
         message=message)
 
+    # Create temporary blips dictionary
     blips = {}
     root_blip = blip.Blip(blip_data, blips, operation_queue)
     blips[root_blip.blip_id] = root_blip
-    created = wavelet.Wavelet(wavelet_data,
-                              blips=blips,
-                              operation_queue=operation_queue)
+
     if submit:
-      result = self._first_rpc_result(self.submit(created))
+      # Submit operation to server and return actual wave/blip IDs
+      temp_wavelet = wavelet.Wavelet(wavelet_data,
+                                blips=blips,
+                                root_thread=None,
+                                operation_queue=operation_queue)
+      result = self._first_rpc_result(self.submit(temp_wavelet))
       if type(result) == list:
         result = result[0]
-      # Currently, data is sometimes wrapped in an outer 'data'
-      # Remove these 2 lines when that is no longer an issue.
-      if 'data' in result and len(result) == 2:
-        result = result['data']
       if 'blipId' in result:
         blip_data['blipId'] = result['blipId']
         wavelet_data['rootBlipId'] = result['blipId']
@@ -376,11 +379,17 @@ class WaveService(object):
       blips = {}
       root_blip = blip.Blip(blip_data, blips, operation_queue)
       blips[root_blip.blip_id] = root_blip
-      created = wavelet.Wavelet(wavelet_data,
-                                blips=blips,
-                                operation_queue=operation_queue)
 
-    return created
+    root_thread = wavelet.BlipThread('',
+                             -1,
+                             [root_blip.blip_id],
+                             blips,
+                             operation_queue)
+    new_wavelet = wavelet.Wavelet(wavelet_data,
+                              blips=blips,
+                              root_thread=root_thread,
+                              operation_queue=operation_queue)
+    return new_wavelet
 
   def fetch_wavelet(self, wave_id, wavelet_id=None, proxy_for_id=None):
     """Use the REST interface to fetch a wave and return it.

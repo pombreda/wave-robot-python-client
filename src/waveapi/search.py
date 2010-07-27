@@ -55,6 +55,10 @@ class Results(object):
     """Returns a list of digests."""
     return self._digests
 
+  def __iter__(self):
+    """Iterate over the list of digests."""
+    return iter(self._digests)
+
   def serialize(self):
     """Return a dict of the search results properties."""
     return {'query': self._query,

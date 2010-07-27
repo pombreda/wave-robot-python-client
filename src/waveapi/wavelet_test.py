@@ -72,8 +72,16 @@ class TestWavelet(unittest.TestCase):
                           self.all_blips,
                           self.operation_queue)
     self.all_blips[self.blip.blip_id] = self.blip
+    root_thread_data = TEST_WAVELET_DATA.get('rootThread')
+    root_thread = wavelet.BlipThread('',
+                                     root_thread_data.get('location'),
+                                     root_thread_data.get('blipIds', []),
+                                     self.all_blips,
+                                     self.operation_queue)
+ 
     self.wavelet = wavelet.Wavelet(TEST_WAVELET_DATA,
                                    self.all_blips,
+                                   root_thread,
                                    self.operation_queue)
     self.wavelet.robot_address = ROBOT_NAME
 

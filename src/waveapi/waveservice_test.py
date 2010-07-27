@@ -52,5 +52,18 @@ class TestWavelet(unittest.TestCase):
                       len(b.reply_threads))
 
 
+  def testWaveletBlipMethods(self):
+    operation_queue = ops.OperationQueue()
+    TEST_DATA = simplejson.loads(testdata.json_string)
+    w = self.waveservice._wavelet_from_json(TEST_DATA,
+                                            operation_queue)
+    root_blip = w.root_blip
+    blip = root_blip.continue_thread()
+    self.assertEquals(blip.parent_blip_id, root_blip.parent_blip_id)
+    self.assertEquals(8, len(w.blips))
+    self.assertEquals(4, len(w.root_thread.blips))
+
+
+
 if __name__ == '__main__':
   unittest.main()
