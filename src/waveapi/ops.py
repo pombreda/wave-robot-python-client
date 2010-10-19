@@ -43,7 +43,7 @@ DOCUMENT_INLINE_BLIP_INSERT = 'document.inlineBlip.insert'
 DOCUMENT_MODIFY = 'document.modify'
 ROBOT_CREATE_WAVELET = 'robot.createWavelet'
 ROBOT_FETCH_WAVE = 'robot.fetchWave'
-ROBOT_NOTIFY = 'robot.notifyCapabilitiesHash'
+ROBOT_NOTIFY = 'robot.notify'
 ROBOT_SEARCH = 'robot.search'
 
 # Assign always NOTIFY_OP_ID to the notify operation so
@@ -209,9 +209,9 @@ class OperationQueue(object):
     if props is None:
       props = {}
     props.update(kwprops)
-    if not wave_id is None:
+    if wave_id is not None:
       props['waveId'] = wave_id
-    if not wavelet_id is None:
+    if wavelet_id is not None:
       props['waveletId'] = wavelet_id
     if self._proxy_for_id:
       props['proxyingFor'] = self._proxy_for_id
@@ -303,9 +303,9 @@ class OperationQueue(object):
     """
     op = self.new_operation(
         ROBOT_SEARCH, wave_id=None, wavelet_id=None, query=query)
-    if not index is None:
+    if index is not None:
       op.set_param('index', index)
-    if not num_results is None:
+    if num_results is not None:
       op.set_param('numResults', num_results)
     return op
 

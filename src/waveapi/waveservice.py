@@ -199,7 +199,7 @@ class WaveService(object):
     # We either expect an operationqueue, a single op or a list
     # of ops:
     if (not isinstance(operations, ops.OperationQueue)):
-      if not type(operations) == list:
+      if not isinstance(operations, list):
         operations = [operations]
       queue = ops.OperationQueue()
       queue.copy_operations(operations)
@@ -241,7 +241,7 @@ class WaveService(object):
       raise errors.RpcError(str(error['code'])
           + ': ' + error['message'])
     data = result.get('data')
-    if not data is None:
+    if data is not None:
       return data
     raise errors.Error('RPC Error: No data record.')
 
@@ -367,7 +367,7 @@ class WaveService(object):
                                 root_thread=None,
                                 operation_queue=operation_queue)
       result = self._first_rpc_result(self.submit(temp_wavelet))
-      if type(result) == list:
+      if isinstance(result, list):
         result = result[0]
       if 'blipId' in result:
         blip_data['blipId'] = result['blipId']
