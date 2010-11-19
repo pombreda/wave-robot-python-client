@@ -289,7 +289,8 @@ class Robot(object):
     return self.get_waveservice().new_wave(
         domain, participants, message, proxy_for_id, submit)
 
-  def fetch_wavelet(self, wave_id, wavelet_id=None, proxy_for_id=None):
+  def fetch_wavelet(self, wave_id, wavelet_id=None, proxy_for_id=None,
+                    raw_deltas_from_version=-1, return_raw_snapshot=False):
     """Use the REST interface to fetch a wave and return it.
 
     The returned wavelet contains a snapshot of the state of the
@@ -303,7 +304,8 @@ class Robot(object):
     wavelet.
     """
     return self.get_waveservice().fetch_wavelet(
-        wave_id, wavelet_id, proxy_for_id)
+        wave_id, wavelet_id, proxy_for_id, raw_deltas_from_version,
+        return_raw_snapshot)
 
   def blind_wavelet(self, json, proxy_for_id=None):
     """Construct a blind wave from a json string.

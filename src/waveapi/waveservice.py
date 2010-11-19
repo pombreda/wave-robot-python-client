@@ -391,7 +391,8 @@ class WaveService(object):
                               operation_queue=operation_queue)
     return new_wavelet
 
-  def fetch_wavelet(self, wave_id, wavelet_id=None, proxy_for_id=None):
+  def fetch_wavelet(self, wave_id, wavelet_id=None, proxy_for_id=None,
+                    raw_deltas_from_version=-1, return_raw_snapshot=False):
     """Use the REST interface to fetch a wave and return it.
 
     The returned wavelet contains a snapshot of the state of the
@@ -403,13 +404,26 @@ class WaveService(object):
     wavelet gets submited to the server, either by calling
     robot.submit() or by calling .submit_with() on the returned
     wavelet.
+
+    Args:
+      wave_id: the wave id
+      wavelet_id: the wavelet_id
+      proxy_for_id: on whose behalf to execute the operation
+      raw_deltas_from_version: If specified, return a raw dump of the
+        delta history of this wavelet, starting at the given version.
+        This may return only part of the history; use additional
+        requests with higher raw_deltas_from_version parameters to
+        get the rest.
+      return_raw_snapshot: if true, return the raw data for this
+        wavelet.
     """
     util.check_is_valid_proxy_for_id(proxy_for_id)
     if not wavelet_id:
       domain, id = wave_id.split('!', 1)
       wavelet_id = domain + '!conv+root'
     operation_queue = ops.OperationQueue(proxy_for_id)
-    operation_queue.robot_fetch_wave(wave_id, wavelet_id)
+    operation_queue.robot_fetch_wave(wave_id, wavelet_id,
+        raw_deltas_from_version, return_raw_snapshot)
     result = self._first_rpc_result(self.make_rpc(operation_queue))
     return self._wavelet_from_json(result, ops.OperationQueue(proxy_for_id))
 

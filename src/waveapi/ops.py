@@ -309,16 +309,29 @@ class OperationQueue(object):
       op.set_param('numResults', num_results)
     return op
 
-  def robot_fetch_wave(self, wave_id, wavelet_id):
-    """Requests a snapshot of the specified wave.
+  def robot_fetch_wave(self, wave_id, wavelet_id,
+      raw_deltas_from_version=-1, return_raw_snapshot=False):
+    """Requests a snapshot of the specified wavelet.
 
     Args:
       wave_id: The wave id owning that this operation is applied to.
       wavelet_id: The wavelet id that this operation is applied to.
+      raw_deltas_from_version: If specified, return a raw dump of the
+        delta history of this wavelet, starting at the given version.
+        This may return only part of the history; use additional
+        requests with higher raw_deltas_from_version parameters to
+        get the rest.
+      return_raw_snapshot: if true, return the raw data for this
+        wavelet.
     Returns:
       The operation created.
     """
-    return self.new_operation(ROBOT_FETCH_WAVE, wave_id, wavelet_id)
+    op = self.new_operation(ROBOT_FETCH_WAVE, wave_id, wavelet_id)
+    if raw_deltas_from_version != -1:
+      op.set_param('rawDeltasFromVersion', raw_deltas_from_version)
+    if return_raw_snapshot:
+      op.set_param('returnRawSnapshot', return_raw_snapshot)
+    return op
 
   def wavelet_set_title(self, wave_id, wavelet_id, title):
     """Sets the title of a wavelet.
