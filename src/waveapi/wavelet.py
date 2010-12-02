@@ -205,7 +205,7 @@ class Wavelet(object):
   To guarantee that all blips are available, specify Context.ALL for events.
   """
 
-  def __init__(self, json, blips, root_thread, operation_queue):
+  def __init__(self, json, blips, root_thread, operation_queue, raw_deltas=None):
     """Inits this wavelet with JSON data.
 
     Args:
@@ -220,7 +220,7 @@ class Wavelet(object):
     self._wave_id = json.get('waveId')
     self._wavelet_id = json.get('waveletId')
     self._creator = json.get('creator')
-    self._raw_deltas = json.get('rawDeltas')
+    self._raw_deltas = raw_deltas
     self._raw_snapshot = json.get('rawSnapshot')
     self._creation_time = json.get('creationTime', 0)
     self._data_documents = DataDocs(json.get('dataDocuments', {}),

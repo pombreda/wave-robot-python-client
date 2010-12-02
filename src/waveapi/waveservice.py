@@ -295,7 +295,8 @@ class WaveService(object):
       blips[blip_id] = blip.Blip(raw_blip_data, blips, pending_ops,
                                  thread=thread, reply_threads=reply_threads)
 
-    result = wavelet.Wavelet(raw_wavelet_data, blips, root_thread, pending_ops)
+    result = wavelet.Wavelet(raw_wavelet_data, blips, root_thread, pending_ops,
+                             raw_deltas=json.get('rawDeltas'))
 
     robot_address = json.get('robotAddress')
     if robot_address:
